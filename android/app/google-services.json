@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "957135752104",
+    "project_id": "my-chat-app-richi",
+    "storage_bucket": "my-chat-app-richi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957135752104:android:b6cfb20f3ca3849f80ab9d",
+        "android_client_info": {
+          "package_name": "com.example.chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957135752104-ct1a2e8pnv30n9v3djvvdm7dpf6v9pon.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAW8rEzGHwJMH-iw5xyqqE4Sm9EqxcLSME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "957135752104-ct1a2e8pnv30n9v3djvvdm7dpf6v9pon.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "957135752104-99kmfohrm41ei69ojaaaosjpc8tq3brb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
