@@ -40,11 +40,6 @@ class _ConversationsState extends State<Conversations> {
             shrinkWrap: true,
             itemCount: list.length,
             itemBuilder: (context, index) {
-              inspect({
-                "sendby": list[index]['sendBy'],
-                'name': Constants.myName,
-                "message": list[index]['message'],
-              });
               return MessageTile(
                   message: list[index]['message'],
                   me: list[index]['sendBy'] == Constants.myName);
@@ -104,171 +99,102 @@ class _ConversationsState extends State<Conversations> {
       ),
       body: LayoutBuilder(
         builder: (context, constraint) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                chatMessageList(),
-                // Padding(
-                //   padding: EdgeInsets.fromLTRB(40, 20, width * 0.2, 0),
-                //   child: Container(
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(30.0),
-                //       color: Colors.white,
-                //       boxShadow: const [
-                //         BoxShadow(
-                //           color: Colors.black26,
-                //           blurRadius: 10.0,
-                //           offset: Offset(0.0, 10.0),
-                //         ),
-                //       ],
-                //     ),
-                //     child: const Padding(
-                //       padding: EdgeInsets.fromLTRB(15.0, 10, 15.0, 10.0),
-                //       child: Text(
-                //         "Nique ta mère juan Nique ta mère juanNique ta mère juan Nique ta mère juan Nique ta mère juan Nique ta mère juan",
-                //         style: TextStyle(
-                //           fontSize: 20,
-                //           fontWeight: FontWeight.bold,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // const Align(
-                //   alignment: Alignment.topLeft,
-                //   child: Padding(
-                //     padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                //     child: CircleAvatar(
-                //       radius: 30,
-                //       backgroundImage: NetworkImage(
-                //           "https://img-9gag-fun.9cache.com/photo/a3Q5VW5_460s.jpg"),
-                //     ),
-                //   ),
-                // ),
-                // Padding(
-                //   padding: EdgeInsets.fromLTRB(width * 0.2, 0, 40, 0),
-                //   child: Container(
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(30.0),
-                //       color: Colors.white,
-                //       boxShadow: const [
-                //         BoxShadow(
-                //           color: Colors.black26,
-                //           blurRadius: 10.0,
-                //           offset: Offset(0.0, 10.0),
-                //         ),
-                //       ],
-                //     ),
-                //     child: const Padding(
-                //       padding: EdgeInsets.fromLTRB(15.0, 10, 15.0, 10.0),
-                //       child: Text(
-                //         "C'est pas sympa C'est pas sympa C'est pas sympa C'est pas sympa C'est pas sympa C'est pas sympaC'est pas sympa C'est pas sympa",
-                //         style: TextStyle(
-                //           fontSize: 20,
-                //           fontWeight: FontWeight.bold,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // const Align(
-                //   alignment: Alignment.topRight,
-                //   child: Padding(
-                //     padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                //     child: CircleAvatar(
-                //       radius: 30,
-                //       backgroundImage: NetworkImage(
-                //           "https://c.tenor.com/fFntTHJYFPMAAAAM/random.gif"),
-                //     ),
-                //   ),
-                // ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(0, 0, 0, 0.1),
-                    border: Border.all(color: Colors.black),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                  ),
-                  height: height * 0.14,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: const [
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.emoji_emotions_outlined,
-                              size: 40,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.camera_alt,
-                              size: 40,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.photo,
-                              size: 40,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.mic,
-                              size: 40,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Stack(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                20.0, 10.0, width * 0.2, 0.0),
-                            child: TextField(
-                              controller: _messengerController,
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  filled: true,
-                                  hintStyle: TextStyle(color: Colors.grey[800]),
-                                  hintText: "Type in your text",
-                                  fillColor: Colors.white70),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(
-                                  width * 0.2, 15.0, 25.0, 0.0),
-                              child: IconButton(
-                                onPressed: () {
-                                  sendMessage();
-                                },
-                                icon: const Icon(
-                                  Icons.send,
-                                  size: 40,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          return Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0.0, 0, height * 0.16),
+                child: chatMessageList(),
+              ),
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: messageBar(height, width),
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Container messageBar(double height, double width) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(0, 0, 0, 0.1),
+        border: Border.all(color: Colors.black),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+      ),
+      height: height * 0.16,
+      child: Column(
+        children: [
+          Row(
+            children: const [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.emoji_emotions_outlined,
+                  size: 40,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.camera_alt,
+                  size: 40,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.photo,
+                  size: 40,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.mic,
+                  size: 40,
+                ),
+              ),
+            ],
+          ),
+          Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(20.0, 10.0, width * 0.2, 0.0),
+                child: TextField(
+                  controller: _messengerController,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      hintStyle: TextStyle(color: Colors.grey[800]),
+                      hintText: "Type in your text",
+                      fillColor: Colors.white70),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(width * 0.2, 15.0, 25.0, 0.0),
+                  child: IconButton(
+                    onPressed: () {
+                      sendMessage();
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -297,27 +223,30 @@ class MessageTile extends StatelessWidget {
     }
     return Column(
       children: [
-        Padding(
-          padding: padding,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30.0),
-              color: Colors.white,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10.0,
-                  offset: Offset(0.0, 10.0),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15.0, 10, 15.0, 10.0),
-              child: Text(
-                message,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+        Align(
+          alignment: align,
+          child: Padding(
+            padding: padding,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30.0),
+                color: Colors.white,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10.0,
+                    offset: Offset(0.0, 10.0),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 10, 15.0, 10.0),
+                child: Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

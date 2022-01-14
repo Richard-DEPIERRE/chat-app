@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,15 +52,14 @@ class DatabaseMethods {
         await FirebaseFirestore.instance.collection('users').get();
     List<String> documents = [];
     for (var doc in querySnapshot.docs) {
-      if (kDebugMode) {
-        String user = doc['username'].toString().toLowerCase();
-        _authMethods.getCurrentUser();
-        if (user.startsWith(query) &&
-            doc['email'] != await _authMethods.getCurrentUserEmail()) {
-          documents.add(doc['username']);
-        }
+      String user = doc['username'].toString().toLowerCase();
+      _authMethods.getCurrentUser();
+      if (user.startsWith(query) &&
+          doc['email'] != await _authMethods.getCurrentUserEmail()) {
+        documents.add(doc['username']);
       }
     }
+    inspect(documents);
     return documents;
   }
 
@@ -101,11 +102,49 @@ class DatabaseMethods {
     return stream;
   }
 
+  Future<Map<String, dynamic>> getLatestConversation(
+      String chatRoomId, String myName) async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+        .instance
+        .collection('chatroom')
+        .doc(chatRoomId)
+        .collection('chats')
+        .orderBy('time')
+        .get();
+    if (querySnapshot.docs.isEmpty) {
+      return {
+        "message": "No messages yet",
+        "time": DateTime.now().millisecondsSinceEpoch.toString(),
+        "name": myName,
+      };
+    }
+    DocumentSnapshot<Map<String, dynamic>> querySnapshot2 =
+        await FirebaseFirestore.instance
+            .collection('chatroom')
+            .doc(chatRoomId)
+            .collection('chats')
+            .doc(querySnapshot.docs[querySnapshot.docs.length - 1].id)
+            .get();
+    List<String> name = chatRoomId.split("_");
+    return {
+      "message": querySnapshot2.data()?['message'].toString(),
+      "time": querySnapshot2.data()?['time'].toString(),
+      "name": name[0] == myName ? name[1] : name[0],
+    };
+  }
+
   sendMessage(String chatRoomId, messageMap) {
     FirebaseFirestore.instance
         .collection('chatroom')
         .doc(chatRoomId)
         .collection('chats')
         .add(messageMap);
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserChats(String itIsMyName) {
+    return FirebaseFirestore.instance
+        .collection("chatroom")
+        .where('users', arrayContains: itIsMyName)
+        .snapshots();
   }
 }

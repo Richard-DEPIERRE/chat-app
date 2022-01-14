@@ -1,10 +1,13 @@
+import 'dart:developer';
 
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/conversations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Chat extends StatefulWidget {
   const Chat({Key? key}) : super(key: key);
@@ -14,9 +17,92 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  AuthMethods authMethods = AuthMethods();
-  DatabaseMethods databaseMethods = DatabaseMethods();
+  final AuthMethods _authMethods = AuthMethods();
+  final DatabaseMethods _databaseMethods = DatabaseMethods();
   final HelperFunction _helperFunction = HelperFunction();
+
+  createChatRoom(String userName) async {
+    List<String> users = [
+      userName,
+      Constants.myName.toString(),
+    ];
+    users.sort();
+    String? chatRoomId = users.join("_");
+    await _databaseMethods.createChatRoom(chatRoomId, users);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Conversations(
+          chatRoomId: chatRoomId.toString(),
+        ),
+      ),
+    );
+  }
+
+  String readTimestamp(int timestamp) {
+    var now = DateTime.now();
+    var format = DateFormat('HH:mm a');
+    var date = DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000);
+    var diff = date.difference(now);
+    var time = '';
+
+    if (diff.inSeconds <= 0 ||
+        diff.inSeconds > 0 && diff.inMinutes == 0 ||
+        diff.inMinutes > 0 && diff.inHours == 0 ||
+        diff.inHours > 0 && diff.inDays == 0) {
+      time = format.format(date);
+    } else {
+      if (diff.inDays == 1) {
+        time = diff.inDays.toString() + 'DAY AGO';
+      } else {
+        time = diff.inDays.toString() + 'DAYS AGO';
+      }
+    }
+
+    return time;
+  }
+
+  Widget chatRoomsList() {
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: _databaseMethods
+          .getUserChats(Constants.myName.toString())
+          .asyncMap((event) async {
+        List<String> chatRoomIds = event.docs.map((DocumentSnapshot doc) {
+          return doc.id;
+        }).toList();
+        List<Map<String, dynamic>> data = [];
+        for (int i = 0; i < chatRoomIds.length; i++) {
+          data.add(await _databaseMethods.getLatestConversation(
+              chatRoomIds[i], Constants.myName.toString()));
+        }
+        inspect(data);
+        return data;
+      }),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          snapshot.data!.sort((a, b) {
+            return int.parse(b['time']) - int.parse(a['time']);
+          });
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return chatTile(
+                snapshot.data![index]['name'],
+                snapshot.data![index]['message'],
+                readTimestamp(int.parse(snapshot.data![index]['time'])),
+              );
+            },
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -34,14 +120,21 @@ class _ChatState extends State<Chat> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Home'),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.person,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text('conversations'),
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
-              authMethods.signout();
+              _authMethods.signout();
               await _helperFunction.saveUserLoggedInSharedPreference(false);
-              Navigator.of(context).pushReplacementNamed('/');
+              Navigator.of(context).pushNamed('/');
             },
           ),
         ],
@@ -125,19 +218,55 @@ class _ChatState extends State<Chat> {
                 color: Colors.grey,
               ),
             ),
+            chatRoomsList(),
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   child: const Icon(Icons.add),
-      //   onPressed: () async {
-      //     var res = await showSearch(
-      //         context: context, delegate: SearchScreen(context: context));
-      //     if (res != "close") {
-      //       Navigator.of(context).pushNamed('/conversations');
-      //     }
-      //   },
-      // ),
+    );
+  }
+
+  Padding chatTile(String name, String message, String time) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8.0, 20.0, 8.0, 0.0),
+      child: ListTile(
+        onTap: () {
+          createChatRoom(name);
+        },
+        leading: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF3383CD),
+                Color(0xFF11249F),
+              ],
+            ),
+          ),
+          child: const CircleAvatar(
+            radius: 25,
+            backgroundImage: AssetImage(
+              'assets/group.png',
+            ),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
+        title: Text(
+          name + " - " + message,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          time,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -145,8 +274,7 @@ class _ChatState extends State<Chat> {
 class SearchScreen extends SearchDelegate<String> {
   SearchScreen({Key? key, required this.context});
   BuildContext context;
-  DatabaseMethods databaseMethods = DatabaseMethods();
-  AuthMethods authMethods = AuthMethods();
+  final DatabaseMethods _databaseMethods = DatabaseMethods();
 
   createChatRoom(String userName) async {
     List<String> users = [
@@ -155,7 +283,7 @@ class SearchScreen extends SearchDelegate<String> {
     ];
     users.sort();
     String? chatRoomId = users.join("_");
-    await databaseMethods.createChatRoom(chatRoomId, users);
+    await _databaseMethods.createChatRoom(chatRoomId, users);
     close(context, chatRoomId);
   }
 
@@ -187,7 +315,7 @@ class SearchScreen extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) => FutureBuilder<List<String>>(
-        future: databaseMethods.getSuggestionByQuery(query),
+        future: _databaseMethods.getSuggestionByQuery(query),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
