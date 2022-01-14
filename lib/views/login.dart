@@ -1,5 +1,8 @@
 // import 'package:chat_app/widgets/buttons.dart';
+
+import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
+import 'package:chat_app/services/database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +21,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
 
-  AuthMethods authMethods = AuthMethods();
+  final AuthMethods _authMethods = AuthMethods();
+  final DatabaseMethods _databaseMethods = DatabaseMethods();
+  final HelperFunction _helperFunction = HelperFunction();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -29,11 +34,17 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = true;
       });
-      authMethods
+      _authMethods
           .signInWithEmailAndPassword(
               _emailController.text, _passwordController.text)
-          .then((value) {
+          .then((value) async {
         if (value != null) {
+          Map<String, String> user =
+              await _databaseMethods.getUserByUserEmail(_emailController.text);
+          _helperFunction.saveUserLoggedInSharedPreference(true);
+          _helperFunction
+              .saveUserNameSharedPreference((user["username"]) ?? "");
+          _helperFunction.saveUserEmailSharedPreference((user["email"]) ?? "");
           Fluttertoast.showToast(msg: "Sign Up Successful");
           Navigator.pushReplacementNamed(context, '/chat');
         } else {
@@ -70,8 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Image(
                   width: width * 0.4,
-                  image: const NetworkImage(
-                      "https://freepngimg.com/download/facebook/59992-blue-aqua-sky-messages-area-free-clipart-hd.png"),
+                  image: const AssetImage("assets/icon.png"),
                 ),
               ),
               Form(

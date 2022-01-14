@@ -7,8 +7,7 @@ class HelperFunction {
 
   // SETTER
 
-  Future<void> saveUserLoggedInSharedPreference(
-      bool isUserLoggedIn) async {
+  Future<void> saveUserLoggedInSharedPreference(bool isUserLoggedIn) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setBool(sharedPreferenceUserLoggedInKey, isUserLoggedIn);
   }
@@ -23,12 +22,13 @@ class HelperFunction {
     preferences.setString(sharedPreferenceUserEmailKey, userEmail);
   }
 
-
   // GETTER
 
   Future<bool?> getUserLoggedInSharedPreference() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getBool(sharedPreferenceUserLoggedInKey);
+    return (preferences.getBool(sharedPreferenceUserLoggedInKey) != null)
+        ? preferences.getBool(sharedPreferenceUserLoggedInKey)
+        : false;
   }
 
   Future<String?> getUserNameSharedPreference() async {

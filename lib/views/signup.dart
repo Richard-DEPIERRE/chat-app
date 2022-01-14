@@ -40,12 +40,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               _emailController.text, _passwordController.text)
           .then((value) {
         if (value != null) {
-          Map<String,String> userDataMap = {
-            "username" : _usernameController.text,
-            "email" : _emailController.text
+          Map<String, String> userDataMap = {
+            "username": _usernameController.text,
+            "email": _emailController.text
           };
+          _helperFunction.saveUserLoggedInSharedPreference(true);
           _helperFunction.saveUserEmailSharedPreference(_emailController.text);
-          _helperFunction.saveUserNameSharedPreference(_usernameController.text);
+          _helperFunction
+              .saveUserNameSharedPreference(_usernameController.text);
           _databaseMethods.uploadUserInfo(userDataMap);
           Fluttertoast.showToast(msg: "Sign Up Successful");
           Navigator.pushReplacementNamed(context, "/chat");
@@ -86,8 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.all(20.0),
                       child: Image(
                         width: width * 0.4,
-                        image: const NetworkImage(
-                            "https://freepngimg.com/download/facebook/59992-blue-aqua-sky-messages-area-free-clipart-hd.png"),
+                        image: const AssetImage("assets/icon.png"),
                       ),
                     ),
                     Form(

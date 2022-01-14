@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:chat_app/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,14 +13,29 @@ class DatabaseMethods {
         .get();
   }
 
+  getUserInfo(String email) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("userEmail", isEqualTo: email)
+        .get()
+        .catchError((e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    });
+  }
+
   getUserByUserEmail(String userEmail) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('email', isEqualTo: userEmail)
           .get();
-      print(querySnapshot.docs[0]['username']);
-      return "hello";
+      Map<String, String> user = {
+        "username": querySnapshot.docs[0]['username'],
+        "email": querySnapshot.docs[0]['email']
+      };
+      return user;
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -62,13 +76,36 @@ class DatabaseMethods {
     }
   }
 
-  createChatRoom(String chatRoomId, chatRoomMap) {
+  createChatRoom(String? chatRoomId, chatRoomMap) {
     try {
-      FirebaseFirestore.instance.collection('users').doc(chatRoomId).set(chatRoomMap);
+      FirebaseFirestore.instance
+          .collection('chatroom')
+          .doc(chatRoomId)
+          .set({"chatroomid": chatRoomId, "users": chatRoomMap});
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
     }
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getConversationMessages(
+      String chatRoomId) {
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream = FirebaseFirestore
+        .instance
+        .collection('chatroom')
+        .doc(chatRoomId)
+        .collection('chats')
+        .orderBy('time')
+        .snapshots();
+    return stream;
+  }
+
+  sendMessage(String chatRoomId, messageMap) {
+    FirebaseFirestore.instance
+        .collection('chatroom')
+        .doc(chatRoomId)
+        .collection('chats')
+        .add(messageMap);
   }
 }

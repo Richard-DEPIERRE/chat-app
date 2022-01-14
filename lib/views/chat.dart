@@ -1,5 +1,9 @@
+
+import 'package:chat_app/constants.dart';
+import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/views/conversations.dart';
 import 'package:flutter/material.dart';
 
 class Chat extends StatefulWidget {
@@ -12,9 +16,21 @@ class Chat extends StatefulWidget {
 class _ChatState extends State<Chat> {
   AuthMethods authMethods = AuthMethods();
   DatabaseMethods databaseMethods = DatabaseMethods();
+  final HelperFunction _helperFunction = HelperFunction();
+
+  @override
+  void initState() {
+    getUserInfo();
+    super.initState();
+  }
+
+  getUserInfo() async {
+    Constants.myName = await _helperFunction.getUserNameSharedPreference();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -24,33 +40,123 @@ class _ChatState extends State<Chat> {
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
               authMethods.signout();
+              await _helperFunction.saveUserLoggedInSharedPreference(false);
               Navigator.of(context).pushReplacementNamed('/');
             },
           ),
         ],
+        toolbarHeight: height * 0.1,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF3383CD),
+                Color(0xFF11249F),
+              ],
+            ),
+          ),
+        ),
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.6),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () async {
-          await showSearch(context: context, delegate: SearchScreen());
-        },
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 20.0, 8.0, 0.0),
+              child: ListTile(
+                onTap: () async {
+                  var res = await showSearch(
+                      context: context,
+                      delegate: SearchScreen(context: context));
+                  if (res != "close") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Conversations(
+                          chatRoomId: res.toString(),
+                        ),
+                      ),
+                    );
+                  }
+                },
+                leading: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF3383CD),
+                        Color(0xFF11249F),
+                      ],
+                    ),
+                  ),
+                  child: const CircleAvatar(
+                    radius: 25,
+                    backgroundImage: AssetImage(
+                      'assets/group.png',
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),
+                ),
+                title: const Text(
+                  "+ New chat or create group",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Online',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20.0, 8.0, 20.0, 8.0),
+              child: Divider(
+                height: 10,
+                thickness: 2,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   child: const Icon(Icons.add),
+      //   onPressed: () async {
+      //     var res = await showSearch(
+      //         context: context, delegate: SearchScreen(context: context));
+      //     if (res != "close") {
+      //       Navigator.of(context).pushNamed('/conversations');
+      //     }
+      //   },
+      // ),
     );
   }
 }
 
 class SearchScreen extends SearchDelegate<String> {
-  SearchScreen({Key? key});
+  SearchScreen({Key? key, required this.context});
+  BuildContext context;
   DatabaseMethods databaseMethods = DatabaseMethods();
   AuthMethods authMethods = AuthMethods();
 
-  // Create chat room, send user to chat room, pushreplacement
   createChatRoom(String userName) async {
-    // List<String> users = [
-    //   userName,
-    //   ,
-    // ];
-    // databaseMethods.createChatRoom(chatRoomId, chatRoomMap)
+    List<String> users = [
+      userName,
+      Constants.myName.toString(),
+    ];
+    users.sort();
+    String? chatRoomId = users.join("_");
+    await databaseMethods.createChatRoom(chatRoomId, users);
+    close(context, chatRoomId);
   }
 
   @override
@@ -138,7 +244,7 @@ class SearchScreen extends SearchDelegate<String> {
               ),
               trailing: ElevatedButton(
                 onPressed: () => {
-                  createChatRoom(query),
+                  createChatRoom(users[index]),
                 },
                 child: const Text("Message"),
               ),

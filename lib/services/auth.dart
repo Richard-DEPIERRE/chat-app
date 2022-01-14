@@ -27,7 +27,9 @@ class AuthMethods {
   Future<CustomUser> getCurrentUser() async {
     try {
       User? user = _auth.currentUser;
-      print(user?.email);
+      if (kDebugMode) {
+        print(user?.email);
+      }
       return _userFromFirebaseUser(user);
     } catch (e) {
       if (kDebugMode) {
