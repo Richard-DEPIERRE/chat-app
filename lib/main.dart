@@ -1,8 +1,8 @@
 import 'package:chat_app/helper/authenticate.dart';
-import 'package:chat_app/views/chat.dart';
+import 'package:chat_app/views/home.dart';
+import 'package:chat_app/views/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -34,7 +34,8 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: {
         '/': (context) => const Authenticate(),
-        '/chat': (context) => const Chat(),
+        '/chat': (context) => const Home(),
+        '/profile': (context) => const Profile(),
       },
     );
   }

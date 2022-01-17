@@ -1,5 +1,5 @@
 import 'package:chat_app/helper/helperfunctions.dart';
-import 'package:chat_app/views/login.dart';
+import 'package:chat_app/views/signin.dart';
 import 'package:chat_app/views/signup.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +54,7 @@ class _AuthenticateState extends State<Authenticate> {
             );
           } else {
             return showSignIn
-                ? LoginScreen(toggleView: toggleView)
+                ? SignInScreen(toggleView: toggleView)
                 : SignUpScreen(toggleView: toggleView);
           }
         } else {

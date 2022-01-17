@@ -1,19 +1,17 @@
-import 'dart:developer';
-
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Conversations extends StatefulWidget {
-  const Conversations({Key? key, required this.chatRoomId}) : super(key: key);
+class ChatRooms extends StatefulWidget {
+  const ChatRooms({Key? key, required this.chatRoomId}) : super(key: key);
   final String chatRoomId;
 
   @override
-  _ConversationsState createState() => _ConversationsState();
+  _ChatRoomsState createState() => _ChatRoomsState();
 }
 
-class _ConversationsState extends State<Conversations> {
+class _ChatRoomsState extends State<ChatRooms> {
   final TextEditingController _messengerController = TextEditingController();
   final DatabaseMethods _databaseMethods = DatabaseMethods();
 

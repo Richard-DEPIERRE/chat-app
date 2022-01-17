@@ -80,7 +80,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Text(
                           "Sign Up",
                           style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.bold),
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -88,7 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.all(20.0),
                       child: Image(
                         width: width * 0.4,
-                        image: const AssetImage("assets/icon.png"),
+                        image: const AssetImage("assets/transparent_icon.png"),
                       ),
                     ),
                     Form(

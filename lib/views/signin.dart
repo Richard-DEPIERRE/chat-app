@@ -9,16 +9,16 @@ import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key, required this.toggleView}) : super(key: key);
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({Key? key, required this.toggleView}) : super(key: key);
 
   final Function toggleView;
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   bool isLoading = false;
 
   final AuthMethods _authMethods = AuthMethods();
@@ -73,7 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: EdgeInsets.fromLTRB(20.0, 0, 0, 10.0),
                   child: Text(
                     "Sign In",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Rubik',
+                    ),
                   ),
                 ),
               ),
@@ -81,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Image(
                   width: width * 0.4,
-                  image: const AssetImage("assets/icon.png"),
+                  image: const AssetImage("assets/transparent_icon.png"),
                 ),
               ),
               Form(
