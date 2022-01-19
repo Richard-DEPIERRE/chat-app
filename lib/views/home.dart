@@ -3,6 +3,8 @@ import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/helper/homefunctions.dart';
 import 'package:chat_app/helper/search_screen.dart';
 import 'package:chat_app/views/chatrooms.dart';
+import 'package:chat_app/widgets/category_selector.dart';
+import 'package:chat_app/widgets/favorite_contacts.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -30,6 +32,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: IconButton(
@@ -39,7 +42,8 @@ class _HomeState extends State<Home> {
           ),
           onPressed: () => Navigator.pushNamed(context, '/profile'),
         ),
-        title: const Text('conversations'),
+        centerTitle: true,
+        title: const Text('RiChat'),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -63,8 +67,8 @@ class _HomeState extends State<Home> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
               colors: [
                 Color(0xFF3383CD),
                 Color(0xFF11249F),
@@ -73,20 +77,37 @@ class _HomeState extends State<Home> {
           ),
         ),
         backgroundColor: const Color.fromRGBO(255, 255, 255, 0.6),
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color(0xFF3383CD),
+              Color(0xFF11249F),
+            ],
+          ),
+        ),
         child: Column(
           children: [
-            Container(
-              height: 90.0,
-              color: Colors.blue,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Column(
-                children: [
-                  _homeFunction.chatRoomsList(),
-                ],
+            const CategorySelector(),
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFEF9EB),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30.0),
+                    topRight: Radius.circular(30.0),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const FavoriteContacts(),
+                    _homeFunction.chatRoomsList(),
+                  ],
+                ),
               ),
             ),
           ],

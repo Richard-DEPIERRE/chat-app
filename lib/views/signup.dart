@@ -68,181 +68,197 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(20.0, 0, 0, 10.0),
-                        child: Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
+          : GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(20.0, 0, 0, 10.0),
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Image(
-                        width: width * 0.4,
-                        image: const AssetImage("assets/transparent_icon.png"),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Image(
+                          width: width * 0.4,
+                          image:
+                              const AssetImage("assets/transparent_icon.png"),
+                        ),
                       ),
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                20.0, 20.0, 20.0, 0.0),
-                            child: TextFormField(
-                              validator: (val) {
-                                if (val != null && val.isEmpty) {
-                                  return 'Please enter a username';
-                                } else if (val != null && val.length < 4) {
-                                  return 'Username must be at least 4 characters';
-                                }
-                                return null;
-                              },
-                              controller: _usernameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Username',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                            child: TextFormField(
-                              validator: (value) {
-                                if (value != null && value.isEmpty) {
-                                  return 'Please enter an email';
-                                } else if (value != null &&
-                                    !(RegExp(
-                                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                        .hasMatch(value))) {
-                                  return 'Please enter a valid email';
-                                }
-                                return null;
-                              },
-                              controller: _emailController,
-                              decoration: const InputDecoration(
-                                labelText: 'Email',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                            child: TextFormField(
-                              validator: (value) {
-                                if (value != null && value.isEmpty) {
-                                  return 'Please enter a password';
-                                } else if (value != null && value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                              controller: _passwordController,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                            child: TextFormField(
-                              validator: (value) {
-                                if (value != null &&
-                                    value != _passwordController.text) {
-                                  return 'Please enter the same password';
-                                }
-                                return null;
-                              },
-                              controller: _passwordConfirmController,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Confirm password',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: width * 0.7,
-                            child: ElevatedButton(
-                              child: const Text('Sign up'),
-                              onPressed: () async {
-                                try {
-                                  signMeUp();
-                                } catch (e) {
-                                  if (kDebugMode) {
-                                    print(e);
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20.0, 20.0, 20.0, 0.0),
+                              child: TextFormField(
+                                validator: (val) {
+                                  if (val != null && val.isEmpty) {
+                                    return 'Please enter a username';
+                                  } else if (val != null && val.length < 4) {
+                                    return 'Username must be at least 4 characters';
                                   }
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: "Already have an account? ",
-                              style: TextStyle(
-                                  color: Color.fromRGBO(172, 172, 172, 1)),
-                            ),
-                            TextSpan(
-                              text: "Log in",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromRGBO(125, 125, 125, 1)),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  widget.toggleView();
+                                  return null;
                                 },
+                                controller: _usernameController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Username',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20.0, 0.0, 20.0, 0.0),
+                              child: TextFormField(
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value != null && value.isEmpty) {
+                                    return 'Please enter an email';
+                                  } else if (value != null &&
+                                      !(RegExp(
+                                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                          .hasMatch(value))) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
+                                controller: _emailController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Email',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20.0, 0.0, 20.0, 0.0),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value != null && value.isEmpty) {
+                                    return 'Please enter a password';
+                                  } else if (value != null &&
+                                      value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Password',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20.0, 0.0, 20.0, 0.0),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value != null &&
+                                      value != _passwordController.text) {
+                                    return 'Please enter the same password';
+                                  }
+                                  return null;
+                                },
+                                controller: _passwordConfirmController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Confirm password',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Pick an image'),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Take a picture'),
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              width: width * 0.7,
+                              child: ElevatedButton(
+                                child: const Text('Sign up'),
+                                onPressed: () async {
+                                  try {
+                                    signMeUp();
+                                  } catch (e) {
+                                    if (kDebugMode) {
+                                      print(e);
+                                    }
+                                  }
+                                },
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    // const Text(
-                    //   "Or",
-                    //   style: TextStyle(
-                    //     fontSize: 20,
-                    //     fontWeight: FontWeight.bold,
-                    //     color: Color.fromRGBO(125, 125, 125, 1),
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   width: width * 0.8,
-                    //   child: CustomWidgets.socialButtonRect(
-                    //     '|     Sign up with Google',
-                    //     const Color(0xffDF4A32),
-                    //     "assets/google.png",
-                    //     onTap: () {
-                    //       Fluttertoast.showToast(msg: 'I am Google');
-                    //     },
-                    //   ),
-                    // ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: "Already have an account? ",
+                                style: TextStyle(
+                                    color: Color.fromRGBO(172, 172, 172, 1)),
+                              ),
+                              TextSpan(
+                                text: "Log in",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromRGBO(125, 125, 125, 1)),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    widget.toggleView();
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // const Text(
+                      //   "Or",
+                      //   style: TextStyle(
+                      //     fontSize: 20,
+                      //     fontWeight: FontWeight.bold,
+                      //     color: Color.fromRGBO(125, 125, 125, 1),
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   width: width * 0.8,
+                      //   child: CustomWidgets.socialButtonRect(
+                      //     '|     Sign up with Google',
+                      //     const Color(0xffDF4A32),
+                      //     "assets/google.png",
+                      //     onTap: () {
+                      //       Fluttertoast.showToast(msg: 'I am Google');
+                      //     },
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
               ),
             ),

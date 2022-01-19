@@ -1,12 +1,17 @@
+import 'dart:developer';
+
 import 'package:chat_app/model/user.dart';
+import 'package:chat_app/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final DatabaseMethods _databaseMethods = DatabaseMethods();
 
-  CustomUser _userFromFirebaseUser(User? user) {
-    return user != null ? CustomUser(userId: user.uid) : CustomUser();
+  CustomUser _userFromFirebaseUser(user) {
+    inspect(user);
+    return user != null ? CustomUser(user['username'], '') : CustomUser('', '');
   }
 
   Future<String?> getCurrentUserEmail() async {
@@ -35,19 +40,23 @@ class AuthMethods {
       if (kDebugMode) {
         print(e.toString());
       }
-      return CustomUser();
+      return CustomUser('', '');
     }
   }
 
   Future<CustomUser?> signInWithEmailAndPassword(
       String email, String password) async {
     try {
+      if (kDebugMode) {
+        print('email: $email, password: $password');
+      }
       User? user = (await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       ))
           .user;
-      return _userFromFirebaseUser(user);
+      final userT = await DatabaseMethods().getUserByUserEmail(user!.email!);
+      return _userFromFirebaseUser(userT);
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
         if (e.code == 'user-not-found') {
@@ -58,7 +67,7 @@ class AuthMethods {
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e.toString());
+        print("kdDebugMode: ${e.toString()}");
       }
       return null;
     }

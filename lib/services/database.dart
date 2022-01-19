@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:chat_app/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -59,7 +57,6 @@ class DatabaseMethods {
         documents.add(doc['username']);
       }
     }
-    inspect(documents);
     return documents;
   }
 
