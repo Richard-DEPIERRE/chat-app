@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/model/message.dart';
 import 'package:chat_app/model/user.dart';
@@ -100,17 +102,23 @@ class HomeFunction {
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: snapshot.data!.length * 4,
+                  itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     index = index % snapshot.data!.length;
-                    CustomUser user =
-                        CustomUser(snapshot.data![index]['name'], '');
+                    CustomUser user = CustomUser(
+                        snapshot.data![index]['name'] ?? '',
+                        snapshot.data![index]['image'] ?? '');
+                    inspect(snapshot.data![index]);
                     Message chat = Message(
                       user,
                       readTimestamp(int.parse(snapshot.data![index]['time'])),
                       snapshot.data![index]['message'],
-                      false,
-                      false,
+                      true,
+                      (snapshot.data![index]['sentBy'] != null &&
+                              snapshot.data![index]['sentBy'] !=
+                                  Constants.myName.toString())
+                          ? snapshot.data![index]['seen']
+                          : true,
                       createChatRoom,
                     );
                     return chatTile(chat, context);

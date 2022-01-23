@@ -1,5 +1,7 @@
 // import 'package:chat_app/widgets/buttons.dart';
 
+import 'dart:developer';
+
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
@@ -41,10 +43,13 @@ class _SignInScreenState extends State<SignInScreen> {
         if (value != null) {
           Map<String, String> user =
               await _databaseMethods.getUserByUserEmail(_emailController.text);
+          inspect(user);
           _helperFunction.saveUserLoggedInSharedPreference(true);
           _helperFunction
               .saveUserNameSharedPreference((user["username"]) ?? "");
           _helperFunction.saveUserEmailSharedPreference((user["email"]) ?? "");
+          _helperFunction
+              .saveUserImageURLSharedPreference((user["image"]) ?? "");
           Fluttertoast.showToast(msg: "Sign In Successful");
           Navigator.pushReplacementNamed(context, '/chat');
         } else {
@@ -95,7 +100,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
                         child: TextFormField(
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
@@ -118,7 +124,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       const SizedBox(height: 10),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                         child: TextFormField(
                           validator: (value) {
                             if (value != null && value.isEmpty) {
@@ -160,8 +167,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       children: [
                         const TextSpan(
                           text: "Don't have an account? ",
-                          style:
-                              TextStyle(color: Color.fromRGBO(172, 172, 172, 1)),
+                          style: TextStyle(
+                              color: Color.fromRGBO(172, 172, 172, 1)),
                         ),
                         TextSpan(
                           text: "Sign up",

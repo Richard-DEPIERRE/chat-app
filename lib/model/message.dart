@@ -5,7 +5,7 @@ class Message {
   String time;
   String text;
   bool isLiked;
-  bool unread;
+  bool seen;
   Function onTap;
 
   Message(
@@ -13,7 +13,7 @@ class Message {
     this.time,
     this.text,
     this.isLiked,
-    this.unread,
+    this.seen,
     this.onTap,
   );
 }

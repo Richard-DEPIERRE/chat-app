@@ -1,4 +1,5 @@
 import 'package:chat_app/helper/helperfunctions.dart';
+import 'package:chat_app/views/home.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:chat_app/views/signup.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,20 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   void initState() {
-    getLoggedInState();
+    // getLoggedInState();
     super.initState();
   }
 
   getLoggedInState() async {
-    await _helperFunction.getUserLoggedInSharedPreference().then((value) =>
-        {if (value == true) Navigator.pushReplacementNamed(context, '/chat')});
+    await _helperFunction.getUserLoggedInSharedPreference().then((value) => {
+          if (value == true)
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Home(),
+              ),
+            )
+        });
   }
 
   void toggleView() {
@@ -36,22 +44,7 @@ class _AuthenticateState extends State<Authenticate> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data == true) {
-            return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                title: const Text('Home'),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.exit_to_app),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              floatingActionButton: FloatingActionButton(
-                child: const Icon(Icons.add),
-                onPressed: () {},
-              ),
-            );
+            return const Home();
           } else {
             return showSignIn
                 ? SignInScreen(toggleView: toggleView)

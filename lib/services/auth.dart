@@ -7,11 +7,13 @@ import 'package:flutter/foundation.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // final DatabaseMethods _databaseMethods = DatabaseMethods();
 
-  CustomUser _userFromFirebaseUser(user) {
-    inspect(user);
-    return user != null ? CustomUser(user['username'], '') : CustomUser('', '');
+  CustomUser _userUserFromFirebaseUser(User? user) {
+    return user != null ? CustomUser(user.email!, '') : CustomUser('', '');
+  }
+
+  CustomUser _userGetFromFirebaseUser(user) {
+    return user != null ? CustomUser(user["email"], '') : CustomUser('', '');
   }
 
   Future<String?> getCurrentUserEmail() async {
@@ -35,7 +37,7 @@ class AuthMethods {
       if (kDebugMode) {
         print(user?.email);
       }
-      return _userFromFirebaseUser(user);
+      return _userUserFromFirebaseUser(user);
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -47,16 +49,13 @@ class AuthMethods {
   Future<CustomUser?> signInWithEmailAndPassword(
       String email, String password) async {
     try {
-      if (kDebugMode) {
-        print('email: $email, password: $password');
-      }
       User? user = (await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       ))
           .user;
       final userT = await DatabaseMethods().getUserByUserEmail(user!.email!);
-      return _userFromFirebaseUser(userT);
+      return _userGetFromFirebaseUser(userT);
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
         if (e.code == 'user-not-found') {
@@ -67,7 +66,7 @@ class AuthMethods {
       }
     } catch (e) {
       if (kDebugMode) {
-        print("kdDebugMode: ${e.toString()}");
+        print(e.toString());
       }
       return null;
     }
@@ -81,7 +80,8 @@ class AuthMethods {
         password: password,
       ))
           .user;
-      return _userFromFirebaseUser(user);
+      var res = _userUserFromFirebaseUser(user);
+      return res;
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
         if (e.code == 'weak-password') {

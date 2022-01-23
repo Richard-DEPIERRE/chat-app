@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 Widget chatTile(Message chat, BuildContext context) {
   final width = MediaQuery.of(context).size.width;
-  chat.unread = true;
   return GestureDetector(
     onTap: () {
       chat.onTap(chat.sender.name, context);
@@ -12,7 +11,7 @@ Widget chatTile(Message chat, BuildContext context) {
       margin: const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 20.0),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: chat.unread ? const Color(0xFFFFEFEE) : Colors.white,
+        color: chat.seen ? Colors.white : const Color(0xFFFFEFEE),
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(20.0),
           bottomRight: Radius.circular(20.0),
@@ -23,10 +22,9 @@ Widget chatTile(Message chat, BuildContext context) {
         children: [
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 30,
-                backgroundImage: NetworkImage(
-                    "https://c.tenor.com/fFntTHJYFPMAAAAM/random.gif"),
+                backgroundImage: NetworkImage(chat.sender.imageUrl),
               ),
               SizedBox(
                 width: width * 0.05,
@@ -74,7 +72,7 @@ Widget chatTile(Message chat, BuildContext context) {
                 width: 40.0,
                 height: 20.0,
                 decoration: BoxDecoration(
-                  color: chat.unread ? Colors.red : Colors.transparent,
+                  color: chat.seen ? Colors.transparent : Colors.red,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 alignment: Alignment.center,

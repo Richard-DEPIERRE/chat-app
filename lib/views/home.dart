@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/helper/homefunctions.dart';
@@ -26,6 +29,7 @@ class _HomeState extends State<Home> {
 
   getUserInfo() async {
     Constants.myName = await _helperFunction.getUserNameSharedPreference();
+    setState(() {});
   }
 
   @override
@@ -58,7 +62,7 @@ class _HomeState extends State<Home> {
                       chatRoomId: res.toString(),
                     ),
                   ),
-                );
+                ).then((value) => setState(() {}));
               }
             },
           ),

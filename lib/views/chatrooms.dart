@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -45,7 +46,9 @@ class _ChatRoomsState extends State<ChatRooms> {
             icon: const Icon(Icons.send),
             iconSize: 25.0,
             color: const Color(0xFF11249F),
-            onPressed: () {},
+            onPressed: () {
+              sendMessage();
+            },
           ),
         ],
       ),
@@ -53,7 +56,16 @@ class _ChatRoomsState extends State<ChatRooms> {
   }
 
   _buildMessage(
-      String message, String time, bool isMe, double width, bool isLiked) {
+      String message,
+      String time,
+      bool isMe,
+      double width,
+      bool isLiked,
+      String chatRoomId,
+      String id,
+      String sentBy,
+      dateTime,
+      bool seen) {
     final Widget msg = Row(
       children: [
         Container(
@@ -105,7 +117,10 @@ class _ChatRoomsState extends State<ChatRooms> {
       children: [
         msg,
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            _databaseMethods.updateMessage(
+                chatRoomId, id, message, sentBy, dateTime, !isLiked, seen);
+          },
           icon: Icon(isLiked ? Icons.favorite : Icons.favorite_border),
           iconSize: 30.0,
           color: isLiked ? Colors.red : Colors.blueGrey,
@@ -121,12 +136,6 @@ class _ChatRoomsState extends State<ChatRooms> {
     var formatYear = DateFormat('HH:mm - dd-MM-yyyy');
     var date = DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000);
     var diff = date.difference(now);
-    if (kDebugMode) {
-      print("seconds: ${diff.inSeconds}");
-      print("minutes: ${diff.inMinutes}");
-      print("hours: ${diff.inHours}");
-      print("days: ${diff.inDays}");
-    }
     var time = '';
 
     if (diff.inSeconds <= 0 ||
@@ -142,9 +151,6 @@ class _ChatRoomsState extends State<ChatRooms> {
       } else {
         time = format.format(date);
       }
-      if (kDebugMode) {
-        print("time: $time");
-      }
     } else {
       if (diff.inDays == 1) {
         time = diff.inDays.toString() + 'DAY AGO';
@@ -156,7 +162,7 @@ class _ChatRoomsState extends State<ChatRooms> {
     return time;
   }
 
-  Widget chatMessageList() {
+  chatMessageList() {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: _databaseMethods.getConversationMessages(widget.chatRoomId),
       builder: (context, snapshot) {
@@ -167,14 +173,29 @@ class _ChatRoomsState extends State<ChatRooms> {
                 Map<String, dynamic> data =
                     document.data()! as Map<String, dynamic>;
                 return {
+                  'id': document.id,
                   'message': data['message'],
-                  'sendBy': data['sendBy'],
+                  'sentBy': data['sentBy'],
                   'time': data['time'],
+                  'liked': data['liked'],
+                  'seen': data['seen'],
                 };
               })
               .toList()
               .reversed
               .toList();
+          for (int i = 0; i < list.length; i++) {
+            if (list[i]['sentBy'] != Constants.myName) {
+              _databaseMethods.updateMessage(
+                  widget.chatRoomId,
+                  list[i]['id'],
+                  list[i]["message"],
+                  list[i]["sentBy"],
+                  list[i]["time"],
+                  list[i]['liked'],
+                  true);
+            }
+          }
           return ListView.builder(
             padding: const EdgeInsets.only(top: 15.0),
             scrollDirection: Axis.vertical,
@@ -182,12 +203,18 @@ class _ChatRoomsState extends State<ChatRooms> {
             itemCount: list.length,
             reverse: true,
             itemBuilder: (context, index) {
+              inspect(list[index]);
               return _buildMessage(
                 list[index]['message'],
                 readTimestamp(list[index]['time']),
-                list[index]['sendBy'] == Constants.myName,
+                list[index]['sentBy'] == Constants.myName,
                 width,
-                true,
+                list[index]['liked'],
+                widget.chatRoomId,
+                list[index]['id'],
+                list[index]['sentBy'],
+                list[index]['time'],
+                list[index]['seen'],
               );
             },
           );
@@ -204,8 +231,10 @@ class _ChatRoomsState extends State<ChatRooms> {
     if (_messengerController.text.isNotEmpty) {
       Map<String, dynamic> messageMap = {
         "message": _messengerController.text,
-        "sendBy": Constants.myName.toString(),
+        "sentBy": Constants.myName.toString(),
         "time": DateTime.now().millisecondsSinceEpoch,
+        "liked": false,
+        "seen": false,
       };
       _databaseMethods.sendMessage(widget.chatRoomId, messageMap);
       _messengerController.clear();
@@ -225,6 +254,13 @@ class _ChatRoomsState extends State<ChatRooms> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: Text(name),
         actions: [
           IconButton(
@@ -285,107 +321,8 @@ class _ChatRoomsState extends State<ChatRooms> {
           ),
         ),
       ),
-      // LayoutBuilder(
-      //   builder: (context, constraint) {
-      //     return Stack(
-      //       children: [
-      //         Padding(
-      //           padding: EdgeInsets.fromLTRB(0, 0.0, 0, height * 0.16),
-      //           child: chatMessageList(),
-      //         ),
-      //         Container(
-      //           alignment: Alignment.bottomCenter,
-      //           child: messageBar(height, width),
-      //         ),
-      //       ],
-      //     );
-      //   },
-      // ),
     );
   }
-
-  // Container messageBar(double height, double width) {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: const Color.fromRGBO(0, 0, 0, 0.1),
-  //       border: Border.all(color: Colors.black),
-  //       borderRadius: const BorderRadius.only(
-  //         topLeft: Radius.circular(10),
-  //         topRight: Radius.circular(10),
-  //       ),
-  //     ),
-  //     height: height * 0.16,
-  //     child: Column(
-  //       children: [
-  //         Row(
-  //           children: const [
-  //             Padding(
-  //               padding: EdgeInsets.all(8.0),
-  //               child: Icon(
-  //                 Icons.emoji_emotions_outlined,
-  //                 size: 40,
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: EdgeInsets.all(8.0),
-  //               child: Icon(
-  //                 Icons.camera_alt,
-  //                 size: 40,
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: EdgeInsets.all(8.0),
-  //               child: Icon(
-  //                 Icons.photo,
-  //                 size: 40,
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: EdgeInsets.all(8.0),
-  //               child: Icon(
-  //                 Icons.mic,
-  //                 size: 40,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         Stack(
-  //           children: [
-  //             Padding(
-  //               padding: EdgeInsets.fromLTRB(20.0, 10.0, width * 0.2, 0.0),
-  //               child: TextField(
-  //                 controller: _messengerController,
-  //                 decoration: InputDecoration(
-  //                     border: OutlineInputBorder(
-  //                       borderRadius: BorderRadius.circular(20.0),
-  //                     ),
-  //                     filled: true,
-  //                     hintStyle: TextStyle(color: Colors.grey[800]),
-  //                     hintText: "Type in your text",
-  //                     fillColor: Colors.white70),
-  //               ),
-  //             ),
-  //             Align(
-  //               alignment: Alignment.bottomRight,
-  //               child: Padding(
-  //                 padding: EdgeInsets.fromLTRB(width * 0.2, 15.0, 25.0, 0.0),
-  //                 child: IconButton(
-  //                   onPressed: () {
-  //                     sendMessage();
-  //                   },
-  //                   icon: const Icon(
-  //                     Icons.send,
-  //                     size: 40,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
 
 class MessageTile extends StatelessWidget {

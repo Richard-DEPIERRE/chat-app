@@ -24,7 +24,7 @@ class SearchScreen extends SearchDelegate<String> {
           icon: const Icon(Icons.clear),
           onPressed: () {
             if (query.isEmpty) {
-              close(context, "Done");
+              close(context, "close");
             } else {
               query = '';
               showSuggestions(context);
@@ -109,7 +109,7 @@ class SearchScreen extends SearchDelegate<String> {
               ),
               onTap: () {
                 query = suggestion;
-                close(context, suggestion);
+                createChatRoom(users[index]);
               },
             ),
           );

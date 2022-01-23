@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
@@ -28,6 +30,9 @@ class _ProfileState extends State<Profile> {
 
   getUserInfo() async {
     Constants.myName = await _helperFunction.getUserNameSharedPreference();
+    Constants.myEmail = await _helperFunction.getUserEmailSharedPreference();
+    Constants.myImageUrl =
+        await _helperFunction.getUserImageURLSharedPreference();
   }
 
   void _onSwitchedDark(bool value) {
@@ -60,6 +65,9 @@ class _ProfileState extends State<Profile> {
                     _authMethods.signout();
                     await _helperFunction
                         .saveUserLoggedInSharedPreference(false);
+                    await _helperFunction.saveUserEmailSharedPreference("");
+                    await _helperFunction.saveUserImageURLSharedPreference("");
+                    await _helperFunction.saveUserNameSharedPreference("");
                     Navigator.of(context).pushNamed('/');
                   },
                 ),
@@ -83,11 +91,15 @@ class _ProfileState extends State<Profile> {
               child: Center(
                 child: Column(
                   children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage("assets/icon.png"),
+                        backgroundImage: NetworkImage(
+                          (Constants.myImageUrl != null)
+                              ? Constants.myImageUrl!
+                              : 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200',
+                        ),
                       ),
                     ),
                     Padding(
@@ -100,11 +112,11 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                       child: Text(
-                        "richard.habimana@epitech.eu",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        Constants.myEmail.toString(),
+                        style: const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     ),
                     Padding(

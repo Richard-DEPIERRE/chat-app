@@ -9,7 +9,7 @@ class CategorySelector extends StatefulWidget {
 
 class _CategorySelectorState extends State<CategorySelector> {
   int _selectedIndex = 0;
-  final List<String> categories = ['Messages', 'Online', 'Groups', 'Requests'];
+  final List<String> categories = ['Messages'];
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,6 @@ class _CategorySelectorState extends State<CategorySelector> {
       ),
       height: 90.0,
       child: ListView.builder(
-        shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
         itemBuilder: (BuildContext context, int index) {

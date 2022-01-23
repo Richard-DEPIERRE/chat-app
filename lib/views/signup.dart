@@ -1,12 +1,18 @@
 // import 'package:chat_app/widgets/buttons.dart';
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key, required this.toggleView}) : super(key: key);
@@ -29,25 +35,106 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmController =
       TextEditingController();
+  final ImagePicker _picker = ImagePicker();
+  File? imageUser;
 
-  signMeUp() {
+  pickImage() async {
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 40,
+    );
+    if (image == null) return;
+    final imageTemporary = File(image.path);
+    setState(() {
+      imageUser = imageTemporary;
+    });
+  }
+
+  takeImage() async {
+    final image = await _picker.pickImage(
+      source: ImageSource.camera,
+      preferredCameraDevice: CameraDevice.front,
+      imageQuality: 40,
+    );
+    if (image == null) return;
+    final imageTemporary = File(image.path);
+    setState(() {
+      imageUser = imageTemporary;
+    });
+  }
+
+  Future<ImageSource?> chooseImage(BuildContext context) async {
+    if (Platform.isIOS) {
+      return showCupertinoDialog(
+        context: context,
+        builder: (context) => CupertinoActionSheet(
+          actions: [
+            CupertinoActionSheetAction(
+              onPressed: () {
+                takeImage();
+                Navigator.pop(context, ImageSource.camera);
+              },
+              child: const Text('Take Photo'),
+            ),
+            CupertinoActionSheetAction(
+              onPressed: () {
+                pickImage();
+                Navigator.pop(context, ImageSource.gallery);
+              },
+              child: const Text('Choose From Gallery'),
+            ),
+          ],
+        ),
+      );
+    }
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.camera),
+            title: const Text('Take Photo'),
+            onTap: () async {
+              await takeImage();
+              Navigator.pop(context, ImageSource.camera);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.image),
+            title: const Text('Choose From Gallery'),
+            onTap: () async {
+              await pickImage();
+              Navigator.pop(context, ImageSource.gallery);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  signMeUp(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
       _authMethods
           .signUpWithEmailAndPassword(
               _emailController.text, _passwordController.text)
-          .then((value) {
+          .then((value) async {
         if (value != null) {
+          String fileUrl = await _databaseMethods.uploadImage(
+              basename(imageUser!.path), imageUser!, _usernameController.text);
           Map<String, String> userDataMap = {
             "username": _usernameController.text,
-            "email": _emailController.text
+            "email": _emailController.text,
+            "image": fileUrl,
           };
           _helperFunction.saveUserLoggedInSharedPreference(true);
           _helperFunction.saveUserEmailSharedPreference(_emailController.text);
           _helperFunction
               .saveUserNameSharedPreference(_usernameController.text);
+          _helperFunction.saveUserImageURLSharedPreference(fileUrl);
           _databaseMethods.uploadUserInfo(userDataMap);
           Fluttertoast.showToast(msg: "Sign Up Successful");
           Navigator.pushReplacementNamed(context, "/chat");
@@ -186,23 +273,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text('Pick an image'),
-                            ),
-                            const SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text('Take a picture'),
-                            ),
+                            imageUser == null
+                                ? ElevatedButton(
+                                    onPressed: () async {
+                                      await chooseImage(context);
+                                    },
+                                    child: const Text('Choose Image'),
+                                  )
+                                : GestureDetector(
+                                    onTap: () async {
+                                      await chooseImage(context);
+                                    },
+                                    child: Container(
+                                      width: width * 0.4,
+                                      height: width * 0.4,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: FileImage(imageUser!),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  ),
                             const SizedBox(height: 10),
                             SizedBox(
                               width: width * 0.7,
                               child: ElevatedButton(
-                                child: const Text('Sign up'),
+                                child: const Text('Sign uping'),
                                 onPressed: () async {
                                   try {
-                                    signMeUp();
+                                    signMeUp(context);
                                   } catch (e) {
                                     if (kDebugMode) {
                                       print(e);
