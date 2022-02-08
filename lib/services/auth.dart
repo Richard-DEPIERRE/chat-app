@@ -19,112 +19,29 @@ class AuthMethods {
     return user != null ? CustomUser(user["email"], '') : CustomUser('', '');
   }
 
+  // TODO: implement build
   Future<String?> getCurrentUserEmail() async {
-    try {
-      User? user = _auth.currentUser;
-      if (kDebugMode) {
-        print(user?.email);
-      }
-      return user?.email;
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return null;
-    }
   }
 
-  Future<CustomUser> getCurrentUser() async {
-    try {
-      User? user = _auth.currentUser;
-      if (kDebugMode) {
-        print(user?.email);
-      }
-      return _userUserFromFirebaseUser(user);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      return CustomUser('', '');
-    }
+  // TODO: implement build
+  Future<CustomUser?> getCurrentUser() async {
   }
 
+  // TODO: implement build
   signInWithEmailAndPassword(
       String email, String password) async {
-    try {
-      User? user = (await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      ))
-          .user;
-      final userT = await DatabaseMethods().getUserByUserEmail(user!.email!);
-      return _userGetFromFirebaseUser(userT);
-    } on FirebaseAuthException catch (e) {
-      if (kDebugMode) {
-        if (e.code == 'user-not-found') {
-          print('No user found for that email.');
-          return "Wrong user found";
-        } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user.');
-          return "Wrong password provided";
-        }
-      }
-      return null;
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      return null;
-    }
   }
 
+  // TODO: implement build
   Future<CustomUser?> signUpWithEmailAndPassword(
       String email, String password) async {
-    try {
-      User? user = (await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      ))
-          .user;
-      inspect(user);
-      var res = _userUserFromFirebaseUser(user);
-      return res;
-    } on FirebaseAuthException catch (e) {
-      if (kDebugMode) {
-        if (e.code == 'weak-password') {
-          print('The password provided is too weak.');
-        } else if (e.code == 'email-already-in-use') {
-          print('The account already exists for that email.');
-        }
-      }
-      return null;
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      return null;
-    }
   }
 
+  // TODO: implement build
   Future resetPassword(String email) async {
-    try {
-      return await _auth.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      return null;
-    }
   }
 
+  // TODO: implement build
   Future signout() async {
-    try {
-      return await _auth.signOut();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-      return null;
-    }
   }
 }

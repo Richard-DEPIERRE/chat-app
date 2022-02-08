@@ -45,7 +45,7 @@ class SearchScreen extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) => Container();
 
   @override
-  Widget buildSuggestions(BuildContext context) => FutureBuilder<List<String>>(
+  Widget buildSuggestions(BuildContext context) => FutureBuilder<List<String>?>(
         future: _databaseMethods.getSuggestionByQuery(query),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {

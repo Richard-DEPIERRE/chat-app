@@ -31,42 +31,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  signMeUp() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoading = true;
-      });
-      inspect("auth");
-      _authMethods
-          .signInWithEmailAndPassword(
-              _emailController.text, _passwordController.text)
-          .then((value) async {
-        inspect(value);
-        if (value == "Wrong user found" || value == "Wrong password provided") {
-          Fluttertoast.showToast(msg: value);
-        } else if (value != null) {
-          inspect(_emailController.text);
-          inspect(_passwordController.text);
-          Map<String, String> user =
-              await _databaseMethods.getUserByUserEmail(_emailController.text);
-          _helperFunction.saveUserLoggedInSharedPreference(true);
-          inspect(user);
-          _helperFunction
-              .saveUserNameSharedPreference((user["username"]) ?? "");
-          _helperFunction.saveUserEmailSharedPreference((user["email"]) ?? "");
-          _helperFunction.saveUserImageURLSharedPreference((user["image"]) ??
-              "https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223");
-          Fluttertoast.showToast(msg: "Sign In Successful");
-          Navigator.pushReplacementNamed(context, '/chat');
-        } else {
-          Fluttertoast.showToast(msg: "Sign In Failed");
-        }
-        setState(() {
-          isLoading = false;
-        });
-      });
-    }
-  }
+  // TODO: implement build
+  signMeUp() {}
 
   @override
   Widget build(BuildContext context) {
@@ -190,33 +156,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                 ),
-                // const Text(
-                //   "Or",
-                //   style: TextStyle(
-                //     fontSize: 20,
-                //     fontWeight: FontWeight.bold,
-                //     color: Color.fromRGBO(125, 125, 125, 1),
-                //   ),
-                // ),
-                // SizedBox(
-                //   width: width * 0.8,
-                //   child: CustomWidgets.socialButtonRect(
-                //     '|       Login with Google',
-                //     const Color(0xffDF4A32),
-                //     "assets/google.png",
-                //     onTap: () async {
-                //       try {
-                //         final credentials = await signInWithGoogle();
-                //         print(credentials);
-                //       } on FirebaseAuthException catch (e) {
-                //         print("firebase auth exception");
-                //         print(e);
-                //       } catch (e) {
-                //         print(e);
-                //       }
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ),

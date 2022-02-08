@@ -38,29 +38,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final ImagePicker _picker = ImagePicker();
   File? imageUser;
 
+  // TODO: implement build
   pickImage() async {
-    final image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 40,
-    );
-    if (image == null) return;
-    final imageTemporary = File(image.path);
-    setState(() {
-      imageUser = imageTemporary;
-    });
   }
 
+  // TODO: implement build
   takeImage() async {
-    final image = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-      imageQuality: 40,
-    );
-    if (image == null) return;
-    final imageTemporary = File(image.path);
-    setState(() {
-      imageUser = imageTemporary;
-    });
   }
 
   Future<ImageSource?> chooseImage(BuildContext context) async {
@@ -113,49 +96,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  // TODO: implement build
   signMeUp(BuildContext context) {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoading = false;
-      });
-      _authMethods
-          .signUpWithEmailAndPassword(
-              _emailController.text, _passwordController.text)
-          .then((value) async {
-        if (value != null) {
-          String fileUrl =
-              "https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223";
-          if (imageUser != null) {
-            fileUrl = await _databaseMethods.uploadImage(
-                basename(imageUser!.path),
-                imageUser!,
-                _usernameController.text);
-          }
-          Map<String, String> userDataMap = {
-            "username": _usernameController.text,
-            "email": _emailController.text,
-            "image": fileUrl,
-          };
-          _helperFunction.saveUserLoggedInSharedPreference(true);
-          _helperFunction.saveUserEmailSharedPreference(_emailController.text);
-          _helperFunction
-              .saveUserNameSharedPreference(_usernameController.text);
-          _helperFunction.saveUserImageURLSharedPreference(fileUrl);
-          _databaseMethods.uploadUserInfo(userDataMap);
-          Fluttertoast.showToast(msg: "Sign Up Successful");
-          Navigator.pushReplacementNamed(context, "/chat");
-          setState(() {
-            isLoading = false;
-          });
-        }
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    // final height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: isLoading
           ? const Center(
@@ -239,7 +186,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: 10),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
-                                  20.0, 0.0, 20.0, 0.0),
+                                20.0,
+                                0.0,
+                                20.0,
+                                0.0,
+                              ),
                               child: TextFormField(
                                 validator: (value) {
                                   if (value != null && value.isEmpty) {
@@ -261,7 +212,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: 10),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
-                                  20.0, 0.0, 20.0, 0.0),
+                                20.0,
+                                0.0,
+                                20.0,
+                                0.0,
+                              ),
                               child: TextFormField(
                                 validator: (value) {
                                   if (value != null &&
@@ -329,13 +284,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const TextSpan(
                                 text: "Already have an account? ",
                                 style: TextStyle(
-                                    color: Color.fromRGBO(172, 172, 172, 1)),
+                                  color: Color.fromRGBO(172, 172, 172, 1),
+                                ),
                               ),
                               TextSpan(
                                 text: "Log in",
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromRGBO(125, 125, 125, 1)),
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(125, 125, 125, 1),
+                                ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     widget.toggleView();
@@ -345,25 +302,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                       ),
-                      // const Text(
-                      //   "Or",
-                      //   style: TextStyle(
-                      //     fontSize: 20,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: Color.fromRGBO(125, 125, 125, 1),
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   width: width * 0.8,
-                      //   child: CustomWidgets.socialButtonRect(
-                      //     '|     Sign up with Google',
-                      //     const Color(0xffDF4A32),
-                      //     "assets/google.png",
-                      //     onTap: () {
-                      //       Fluttertoast.showToast(msg: 'I am Google');
-                      //     },
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

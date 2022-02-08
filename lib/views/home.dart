@@ -29,23 +29,8 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
+  // TODO: implement build
   createChatRoom(String userName, BuildContext context) async {
-    List<String> users = [
-      userName,
-      Constants.myName.toString(),
-    ];
-    users.sort();
-    String? chatRoomId = users.join("_");
-    await _databaseMethods.createChatRoom(chatRoomId, users);
-    setState(() {});
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatRooms(
-          chatRoomId: chatRoomId.toString(),
-        ),
-      ),
-    ).then((value) => {setState(() {})});
   }
 
   getUserInfo() async {

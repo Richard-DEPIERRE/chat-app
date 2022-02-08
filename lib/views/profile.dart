@@ -51,141 +51,134 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return FutureBuilder<Object>(
-        future: null,
-        builder: (context, snapshot) {
-          // if (snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(Constants.myName.toString()),
-              centerTitle: true,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.logout_outlined),
-                  onPressed: () async {
-                    _authMethods.signout();
-                    await _helperFunction
-                        .saveUserLoggedInSharedPreference(false);
-                    await _helperFunction.saveUserEmailSharedPreference("");
-                    await _helperFunction.saveUserImageURLSharedPreference("");
-                    await _helperFunction.saveUserNameSharedPreference("");
-                    Navigator.of(context).pushNamed('/');
-                  },
-                ),
-              ],
-              toolbarHeight: height * 0.1,
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF3383CD),
-                      Color(0xFF11249F),
-                    ],
-                  ),
-                ),
+      future: null,
+      builder: (context, snapshot) {
+        // if (snapshot.hasData) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(Constants.myName.toString()),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout_outlined),
+                onPressed: () async {
+                  _authMethods.signout();
+                  await _helperFunction.saveUserLoggedInSharedPreference(false);
+                  await _helperFunction.saveUserEmailSharedPreference("");
+                  await _helperFunction.saveUserImageURLSharedPreference("");
+                  await _helperFunction.saveUserNameSharedPreference("");
+                  Navigator.of(context).pushNamed('/');
+                },
               ),
-              backgroundColor: const Color.fromRGBO(255, 255, 255, 0.6),
-            ),
-            body: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(
-                          (Constants.myImageUrl != null)
-                              ? Constants.myImageUrl!
-                              : 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200',
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-                      child: Text(
-                        Constants.myName.toString(),
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                      child: Text(
-                        Constants.myEmail.toString(),
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                      child: ElevatedButton(
-                        onPressed: () => {},
-                        style: ElevatedButton.styleFrom(
-                          primary: const Color(0xFF3383CD),
-                          minimumSize: const Size(180, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text(
-                              'Edit Profile',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Icon(
-                                Icons.arrow_forward_ios_sharp,
-                                size: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    title("SECURITY", 20),
-                    tile(Icons.lock, "Change Password", true),
-                    tile(Icons.download, "Download Data", true),
-                    tile(Icons.delete, "Delete Data", true),
-                    title("PREFERENCES", 0),
-                    tile(Icons.public, "Language", true),
-                    switchTile("Dark Mode", Icons.dark_mode_outlined, isDark,
-                        _onSwitchedDark),
-                    switchTile("Only Download via Wi-Fi", Icons.wifi, isWifi,
-                        _onSwitchedWifi),
-                    title("LOGIN", 0),
-                    tile(Icons.logout, "Log Out", false),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                      child: Text(
-                        'Version 0.1.2',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
+            ],
+            toolbarHeight: height * 0.1,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF3383CD),
+                    Color(0xFF11249F),
                   ],
                 ),
               ),
             ),
-          );
-          // } else {
-          //   return const Scaffold(
-          //     body: Center(
-          //       child: CircularProgressIndicator(),
-          //     ),
-          //   );
-          // }
-        });
+            backgroundColor: const Color.fromRGBO(255, 255, 255, 0.6),
+          ),
+          body: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(
+                        (Constants.myImageUrl != null)
+                            ? Constants.myImageUrl!
+                            : 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
+                    child: Text(
+                      Constants.myName.toString(),
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    child: Text(
+                      Constants.myEmail.toString(),
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: ElevatedButton(
+                      onPressed: () => {},
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color(0xFF3383CD),
+                        minimumSize: const Size(180, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            child: Icon(
+                              Icons.arrow_forward_ios_sharp,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  title("SECURITY", 20),
+                  tile(Icons.lock, "Change Password", true),
+                  tile(Icons.download, "Download Data", true),
+                  tile(Icons.delete, "Delete Data", true),
+                  title("PREFERENCES", 0),
+                  tile(Icons.public, "Language", true),
+                  switchTile("Dark Mode", Icons.dark_mode_outlined, isDark,
+                      _onSwitchedDark),
+                  switchTile("Only Download via Wi-Fi", Icons.wifi, isWifi,
+                      _onSwitchedWifi),
+                  title("LOGIN", 0),
+                  tile(Icons.logout, "Log Out", false),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                    child: Text(
+                      'Version 0.1.2',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

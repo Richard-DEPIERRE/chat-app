@@ -29,7 +29,7 @@ class _FavoriteContactsState extends State<FavoriteContacts> {
   }
 
   favourites() {
-    return FutureBuilder<List<Map<String, String>>>(
+    return FutureBuilder<List<Map<String, String>>?>(
         future: _databaseMethods.getFaourites(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {

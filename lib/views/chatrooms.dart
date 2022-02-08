@@ -226,18 +226,8 @@ class _ChatRoomsState extends State<ChatRooms> {
     );
   }
 
+  // TODO: implement build
   sendMessage() {
-    if (_messengerController.text.isNotEmpty) {
-      Map<String, dynamic> messageMap = {
-        "message": _messengerController.text,
-        "sentBy": Constants.myName.toString(),
-        "time": DateTime.now().millisecondsSinceEpoch,
-        "liked": false,
-        "seen": false,
-      };
-      _databaseMethods.sendMessage(widget.chatRoomId, messageMap);
-      _messengerController.clear();
-    }
   }
 
   @override

@@ -48,14 +48,14 @@ class HomeFunction {
   }
 
   Widget chatRoomsList(Function funct) {
-    return StreamBuilder<List<Map<String, dynamic>>>(
+    return StreamBuilder<List<Map<String, dynamic>?>>(
       stream: _databaseMethods
-          .getUserChats(Constants.myName.toString())
+          .getUserChats(Constants.myName.toString())!
           .asyncMap((event) async {
         List<String> chatRoomIds = event.docs.map((DocumentSnapshot doc) {
           return doc.id;
         }).toList();
-        List<Map<String, dynamic>> data = [];
+        List<Map<String, dynamic>?> data = [];
         for (int i = 0; i < chatRoomIds.length; i++) {
           data.add(await _databaseMethods.getLatestConversation(
               chatRoomIds[i], Constants.myName.toString()));
@@ -65,7 +65,7 @@ class HomeFunction {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           snapshot.data!.sort((a, b) {
-            return int.parse(b['time']) - int.parse(a['time']);
+            return int.parse(b!['time']) - int.parse(a!['time']);
           });
           return Expanded(
             child: Container(
@@ -88,19 +88,19 @@ class HomeFunction {
                   itemBuilder: (context, index) {
                     index = index % snapshot.data!.length;
                     CustomUser user = CustomUser(
-                        snapshot.data![index]['name'] ?? '',
-                        snapshot.data![index]['image'] ??
+                        snapshot.data![index]!['name'] ?? '',
+                        snapshot.data![index]!['image'] ??
                             'https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223');
                     Message chat = Message(
                       user,
-                      readTimestamp(int.parse(snapshot.data![index]['time'])),
-                      snapshot.data![index]['message'],
+                      readTimestamp(int.parse(snapshot.data![index]!['time'])),
+                      snapshot.data![index]!['message'],
                       true,
-                      (snapshot.data![index]['sentBy'] != null &&
-                              snapshot.data![index]['sentBy'] !=
+                      (snapshot.data![index]!['sentBy'] != null &&
+                              snapshot.data![index]!['sentBy'] !=
                                   Constants.myName.toString() &&
-                              snapshot.data![index]['seen'])
-                          ? snapshot.data![index]['seen']
+                              snapshot.data![index]!['seen'])
+                          ? snapshot.data![index]!['seen']
                           : true,
                       funct,
                     );
