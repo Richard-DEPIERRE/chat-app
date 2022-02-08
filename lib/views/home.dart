@@ -5,6 +5,7 @@ import 'package:chat_app/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/helper/homefunctions.dart';
 import 'package:chat_app/helper/search_screen.dart';
+import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/chatrooms.dart';
 import 'package:chat_app/widgets/category_selector.dart';
 import 'package:chat_app/widgets/favorite_contacts.dart';
@@ -20,11 +21,31 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final HelperFunction _helperFunction = HelperFunction();
   final HomeFunction _homeFunction = HomeFunction();
+  final DatabaseMethods _databaseMethods = DatabaseMethods();
 
   @override
   void initState() {
     getUserInfo();
     super.initState();
+  }
+
+  createChatRoom(String userName, BuildContext context) async {
+    List<String> users = [
+      userName,
+      Constants.myName.toString(),
+    ];
+    users.sort();
+    String? chatRoomId = users.join("_");
+    await _databaseMethods.createChatRoom(chatRoomId, users);
+    setState(() {});
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatRooms(
+          chatRoomId: chatRoomId.toString(),
+        ),
+      ),
+    ).then((value) => {setState(() {})});
   }
 
   getUserInfo() async {
@@ -109,7 +130,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: [
                     const FavoriteContacts(),
-                    _homeFunction.chatRoomsList(),
+                    _homeFunction.chatRoomsList(createChatRoom),
                   ],
                 ),
               ),

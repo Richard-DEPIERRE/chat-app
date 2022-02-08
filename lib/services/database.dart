@@ -160,6 +160,7 @@ class DatabaseMethods {
 
   Future<Map<String, dynamic>> getLatestConversation(
       String chatRoomId, String myName) async {
+    var names = chatRoomId.split('_');
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
         .instance
         .collection('chatroom')
@@ -185,8 +186,7 @@ class DatabaseMethods {
     QuerySnapshot<Map<String, dynamic>> querySnapshot3 = await FirebaseFirestore
         .instance
         .collection('users')
-        .where('username',
-            isEqualTo: querySnapshot2.data()?['sentBy'].toString())
+        .where('username', isEqualTo: names[0])
         .get();
     return {
       "message": querySnapshot2.data()?['message'].toString(),
@@ -194,7 +194,7 @@ class DatabaseMethods {
       "name": name[0] == myName ? name[1] : name[0],
       "sentBy": querySnapshot2.data()?['sentBy'].toString(),
       "seen": querySnapshot2.data()?['seen'],
-      "image": querySnapshot3.docs[0].data()['image'],
+      "image": querySnapshot3.docs[0]['image'],
     };
   }
 

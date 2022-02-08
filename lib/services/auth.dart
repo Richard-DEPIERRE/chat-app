@@ -9,7 +9,10 @@ class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   CustomUser _userUserFromFirebaseUser(User? user) {
-    return user != null ? CustomUser(user.email!, '') : CustomUser('', '');
+    return user != null
+        ? CustomUser(user.email!,
+            "https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223")
+        : CustomUser('', '');
   }
 
   CustomUser _userGetFromFirebaseUser(user) {
@@ -46,7 +49,7 @@ class AuthMethods {
     }
   }
 
-  Future<CustomUser?> signInWithEmailAndPassword(
+  signInWithEmailAndPassword(
       String email, String password) async {
     try {
       User? user = (await _auth.signInWithEmailAndPassword(
@@ -60,10 +63,13 @@ class AuthMethods {
       if (kDebugMode) {
         if (e.code == 'user-not-found') {
           print('No user found for that email.');
+          return "Wrong user found";
         } else if (e.code == 'wrong-password') {
           print('Wrong password provided for that user.');
+          return "Wrong password provided";
         }
       }
+      return null;
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -80,6 +86,7 @@ class AuthMethods {
         password: password,
       ))
           .user;
+      inspect(user);
       var res = _userUserFromFirebaseUser(user);
       return res;
     } on FirebaseAuthException catch (e) {
@@ -90,6 +97,7 @@ class AuthMethods {
           print('The account already exists for that email.');
         }
       }
+      return null;
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());

@@ -36,20 +36,26 @@ class _SignInScreenState extends State<SignInScreen> {
       setState(() {
         isLoading = true;
       });
+      inspect("auth");
       _authMethods
           .signInWithEmailAndPassword(
               _emailController.text, _passwordController.text)
           .then((value) async {
-        if (value != null) {
+        inspect(value);
+        if (value == "Wrong user found" || value == "Wrong password provided") {
+          Fluttertoast.showToast(msg: value);
+        } else if (value != null) {
+          inspect(_emailController.text);
+          inspect(_passwordController.text);
           Map<String, String> user =
               await _databaseMethods.getUserByUserEmail(_emailController.text);
-          inspect(user);
           _helperFunction.saveUserLoggedInSharedPreference(true);
+          inspect(user);
           _helperFunction
               .saveUserNameSharedPreference((user["username"]) ?? "");
           _helperFunction.saveUserEmailSharedPreference((user["email"]) ?? "");
-          _helperFunction
-              .saveUserImageURLSharedPreference((user["image"]) ?? "");
+          _helperFunction.saveUserImageURLSharedPreference((user["image"]) ??
+              "https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223");
           Fluttertoast.showToast(msg: "Sign In Successful");
           Navigator.pushReplacementNamed(context, '/chat');
         } else {

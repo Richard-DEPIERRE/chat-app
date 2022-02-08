@@ -14,24 +14,6 @@ import 'dart:core';
 class HomeFunction {
   final DatabaseMethods _databaseMethods = DatabaseMethods();
 
-  createChatRoom(String userName, BuildContext context) async {
-    List<String> users = [
-      userName,
-      Constants.myName.toString(),
-    ];
-    users.sort();
-    String? chatRoomId = users.join("_");
-    await _databaseMethods.createChatRoom(chatRoomId, users);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatRooms(
-          chatRoomId: chatRoomId.toString(),
-        ),
-      ),
-    );
-  }
-
   String readTimestamp(int timestamp) {
     var now = DateTime.now();
     var format = DateFormat('HH:mm a');
@@ -65,7 +47,7 @@ class HomeFunction {
     return time;
   }
 
-  Widget chatRoomsList() {
+  Widget chatRoomsList(Function funct) {
     return StreamBuilder<List<Map<String, dynamic>>>(
       stream: _databaseMethods
           .getUserChats(Constants.myName.toString())
@@ -107,8 +89,8 @@ class HomeFunction {
                     index = index % snapshot.data!.length;
                     CustomUser user = CustomUser(
                         snapshot.data![index]['name'] ?? '',
-                        snapshot.data![index]['image'] ?? '');
-                    inspect(snapshot.data![index]);
+                        snapshot.data![index]['image'] ??
+                            'https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223');
                     Message chat = Message(
                       user,
                       readTimestamp(int.parse(snapshot.data![index]['time'])),
@@ -116,10 +98,11 @@ class HomeFunction {
                       true,
                       (snapshot.data![index]['sentBy'] != null &&
                               snapshot.data![index]['sentBy'] !=
-                                  Constants.myName.toString())
+                                  Constants.myName.toString() &&
+                              snapshot.data![index]['seen'])
                           ? snapshot.data![index]['seen']
                           : true,
-                      createChatRoom,
+                      funct,
                     );
                     return chatTile(chat, context);
                   },

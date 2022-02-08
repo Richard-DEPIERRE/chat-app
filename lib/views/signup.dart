@@ -123,8 +123,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               _emailController.text, _passwordController.text)
           .then((value) async {
         if (value != null) {
-          String fileUrl = await _databaseMethods.uploadImage(
-              basename(imageUser!.path), imageUser!, _usernameController.text);
+          String fileUrl =
+              "https://firebasestorage.googleapis.com/v0/b/my-chat-app-richi.appspot.com/o/uploads%2Fuser.png?alt=media&token=a5e87fbf-fa25-4671-acf3-90b69a1cb223";
+          if (imageUser != null) {
+            fileUrl = await _databaseMethods.uploadImage(
+                basename(imageUser!.path),
+                imageUser!,
+                _usernameController.text);
+          }
           Map<String, String> userDataMap = {
             "username": _usernameController.text,
             "email": _emailController.text,

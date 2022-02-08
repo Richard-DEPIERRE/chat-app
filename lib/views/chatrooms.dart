@@ -203,7 +203,6 @@ class _ChatRoomsState extends State<ChatRooms> {
             itemCount: list.length,
             reverse: true,
             itemBuilder: (context, index) {
-              inspect(list[index]);
               return _buildMessage(
                 list[index]['message'],
                 readTimestamp(list[index]['time']),
